@@ -8,7 +8,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from schema import UserCreate, UserResponse, PostCreate, PostResponse, PostUpdate
+from schema import UserCreate, UserResponse, PostCreate, PostResponse, PostUpdate, UserUpdate
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -159,6 +159,70 @@ def get_user_posts(user_id: int, db: Annotated[Session, Depends(get_db)]):
     posts = result.scalars().all()
     
     return posts
+
+# User update
+@app.patch("/api/users/{user_id}", response_model=UserResponse)
+def update_user(user_id: int, user_data: UserUpdate, db: Annotated[Session, Depends(get_db)]):
+    result = db.execute(
+        select(models.User).where(models.User.id == user_id)
+    )
+    user = result.scalars().first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    
+    if user_data.username is not None and user_data.username != user.username:
+        result = db.execute(
+            select(models.User).where(models.User.username == user_data.username)
+        )
+        existing_user = result.scalars().first()
+        if existing_user:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="Username already exists!"
+            )
+        
+    if user_data.email is not None and user_data.email != user.email:
+        result = db.execute(
+            select(models.User).where(models.User.email == user_data.email)
+        )
+        existing_email = result.scalars().first()
+        if existing_email:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="Email already exists!"
+            )
+    
+    if user_data.username is not None:
+        user.username = user_data.username
+    if user_data.email is not None:
+        user.email = user_data.email
+    if user_data.image_file is not None:
+        user.image_file = user_data.image_file
+
+    db.commit()
+    db.refresh(user)
+
+    return user
+
+# Delete user
+@app.delete("/api/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user(user_id: int, db: Annotated[Session, Depends(get_db)]):
+    result = db.execute(
+        select(models.User).where(models.User.id == user_id)
+    )
+    user = result.scalars().first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    
+    db.delete(user)
+    db.commit()
+
 
 # Create posts
 @app.post("/api/posts", response_model=PostResponse, status_code=status.HTTP_201_CREATED)
