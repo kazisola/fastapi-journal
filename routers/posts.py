@@ -94,7 +94,7 @@ async def update_post(post_id: int, post_data: PostUpdate, db: Annotated[AsyncSe
 @router.get("", response_model=list[PostResponse])
 async def get_posts(db: Annotated[AsyncSession, Depends(get_db)]):
     result = await db.execute(
-        select(models.Post).options(selectinload(models.Post.author))
+        select(models.Post).options(selectinload(models.Post.author)).order_by(models.Post.date_posted.desc())
     )
     posts = result.scalars().all()
 
@@ -130,7 +130,7 @@ async def get_user_posts(user_id: int, db: Annotated[AsyncSession, Depends(get_d
         )
     
     result = await db.execute(
-        select(models.Post).options(selectinload(models.Post.author)).where(models.Post.user_id == user_id)
+        select(models.Post).options(selectinload(models.Post.author)).where(models.Post.user_id == user_id).order_by(models.Post.date_posted.desc())
     )
     posts = result.scalars().all()
     
