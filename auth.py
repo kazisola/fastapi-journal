@@ -8,7 +8,7 @@ from config import settings
 password_hash = PasswordHash.recommended()
 
 # Defining the security scheme
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/users/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/users/token")
 
 # Hash a plain password
 def hash_password(password: str) -> str:
