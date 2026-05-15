@@ -1,8 +1,14 @@
+from typing import Annotated
+from fastapi import Depends, HTTPException, status
 from datetime import datetime, timedelta, UTC
 import jwt
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+from database import get_db
 from pwdlib import PasswordHash
 from fastapi.security import OAuth2PasswordBearer
 from config import settings
+import models
 
 # Creates a password hasher
 password_hash = PasswordHash.recommended()
@@ -10,9 +16,11 @@ password_hash = PasswordHash.recommended()
 # Defining the security scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/users/token")
 
+
 # Hash a plain password
 def hash_password(password: str) -> str:
     return password_hash.hash(password)
+
 
 # Verify if password matches
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -28,14 +36,13 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
         expire = datetime.now(UTC) + timedelta(
             minutes=settings.access_token_expire_minutes
         )
-    to_encode.update({ "exp": expire })
+    to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(
-        to_encode,
-        settings.secret_key.get_secret_value(),
-        algorithm=settings.algorithm
+        to_encode, settings.secret_key.get_secret_value(), algorithm=settings.algorithm
     )
 
     return encoded_jwt
+
 
 # Verify access token
 def verify_access_token(token: str) -> str | None:
@@ -44,9 +51,46 @@ def verify_access_token(token: str) -> str | None:
             token,
             settings.secret_key.get_secret_value(),
             algorithms=[settings.algorithm],
-            options={"require": ["exp", "sub"]}
+            options={"require": ["exp", "sub"]},
         )
     except jwt.InvalidTokenError:
         return None
     else:
         return payload.get("sub")
+
+
+# Get current user as a dependy to protect routes
+async def get_current_user(
+    token: Annotated[str, Depends(oauth2_scheme)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> models.User:
+    user_id = verify_access_token(token)
+    if user_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect or expired token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    try:
+        user_id_int = int(user_id)
+    except (TypeError, ValueError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect or expired token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    result = await db.execute(select(models.User).where(models.User.id == user_id_int))
+    user = result.scalars().first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    return user
+
+
+CurrentUser = Annotated[models.User, Depends(get_current_user)]
