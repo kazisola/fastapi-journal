@@ -34,14 +34,14 @@ class UserPrivate(UserPublic):
 
 class PostBase(BaseModel):
     title: str = Field(min_length=1, max_length=100)
-    description: str = Field(min_length=1)
+    content: str = Field(min_length=1)
 
 class PostCreate(PostBase):
     pass
 
 class PostUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=100)
-    description: str | None = Field(default=None, min_length=1)
+    content: str | None = Field(default=None, min_length=1)
 
 class PostResponse(PostBase):
     model_config = ConfigDict(from_attributes=True)

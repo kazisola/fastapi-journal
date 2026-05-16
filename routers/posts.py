@@ -19,7 +19,7 @@ async def create_post(
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     new_post = models.Post(
-        title=post.title, description=post.description, user_id=current_user.id
+        title=post.title, content=post.content, user_id=current_user.id
     )
 
     db.add(new_post)
@@ -50,7 +50,7 @@ async def update_post_fully(
         )
 
     post.title = post_data.title
-    post.description = post_data.description
+    post.content = post_data.content
 
     await db.commit()
     await db.refresh(post, attribute_names=["author"])
