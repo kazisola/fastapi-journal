@@ -7,37 +7,45 @@ class UserBase(BaseModel):
     email: EmailStr = Field(max_length=100)
 
 class UserCreate(UserBase):
-    pass
+    password: str = Field(min_length=8)
 
 class UserUpdate(BaseModel):
     username: str | None = Field(default=None, min_length=1, max_length=50)
     email: EmailStr | None = Field(default=None, max_length=100)
     image_file: str | None = Field(default=None, max_length=200)
 
-class UserResponse(UserBase):
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class UserPublic(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    username: str
     image_file: str | None
     image_path: str
+
+class UserPrivate(UserPublic):
+    email: EmailStr = Field(max_length=100)
 
 
 # ---------------------------------------------------------------------------------
 
 class PostBase(BaseModel):
     title: str = Field(min_length=1, max_length=100)
-    description: str = Field(min_length=1)
+    content: str = Field(min_length=1)
 
 class PostCreate(PostBase):
-    user_id: int # TEMPORARY
+    pass
 
 class PostUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=100)
-    description: str | None = Field(default=None, min_length=1)
+    content: str | None = Field(default=None, min_length=1)
 
 class PostResponse(PostBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
     date_posted: datetime
-    author: UserResponse
+    author: UserPublic
