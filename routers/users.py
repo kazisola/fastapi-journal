@@ -159,8 +159,6 @@ async def update_user(
         user.username = user_data.username
     if user_data.email is not None:
         user.email = user_data.email.lower()
-    if user_data.image_file is not None:
-        user.image_file = user_data.image_file
 
     await db.commit()
     await db.refresh(user)
@@ -254,6 +252,10 @@ async def delete_user(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
         )
+    
+    old_filename = current_user.image_file
 
     await db.delete(user)
     await db.commit()
+
+    delete_profile_pic(old_filename)
