@@ -1,5 +1,6 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
+from starlette.concurrency import run_in_threadpool
 from schema import UserCreate, UserUpdate, UserPublic, UserPrivate, Token
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,6 +14,8 @@ from auth import (
     create_access_token,
     CurrentUser,
 )
+from image_process_utilities import process_profile_pic, delete_profile_pic
+from PIL import UnidentifiedImageError
 from fastapi.security import OAuth2PasswordRequestForm
 
 router = APIRouter()
@@ -163,6 +166,48 @@ async def update_user(
     await db.refresh(user)
 
     return user
+
+
+# Add user profile image
+@router.patch("/{user_id}/picture", response_model=UserPrivate)
+async def upload_profile_pic(
+    user_id: int,
+    file: UploadFile,
+    current_user: CurrentUser,
+    db: Annotated[AsyncSession, Depends(get_db)]
+    ):
+    if current_user.id is not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You are not authorized to perform this action"
+        )
+    
+    content = await file.read()
+    print("content:", content)
+    if len(content) > settings.profile_pic_max_bytes:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Profile pic size cannot be greater than {1024 * 1024} MB"
+        )
+    
+    try:
+        new_filename = await run_in_threadpool(process_profile_pic, content)
+    except UnidentifiedImageError as err:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid image file. Upload a valid image"
+        ) from err
+    
+    old_filename = current_user.image_file
+    current_user.image_file = new_filename
+
+    await db.commit()
+    await db.refresh(current_user)
+
+    if old_filename:
+        delete_profile_pic(old_filename)
+
+    return current_user
 
 
 # Delete user

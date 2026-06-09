@@ -11,4 +11,6 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 30
     algorithm: str = "HS256"
 
+    profile_pic_max_bytes: int = 5 * 1024 * 1024
+
 settings = Settings() # type: ignore
