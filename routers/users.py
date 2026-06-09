@@ -209,6 +209,31 @@ async def upload_profile_pic(
 
     return current_user
 
+# Delete user profile image
+@router.delete("/{user_id}/picture", response_model=UserPrivate)
+async def delete_user_profile_pic(
+    user_id: int,
+    current_user: CurrentUser,
+    db: Annotated[AsyncSession, Depends(get_db)]
+    ):
+    if current_user.id is not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You are not authorized to delete this image"
+        )
+    old_filename = current_user.image_file
+    if old_filename is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No image found"
+        )
+    current_user.image_file = None
+    await db.commit()
+    await db.refresh(current_user)
+    delete_profile_pic(old_filename)
+    
+    return current_user
+
 
 # Delete user
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
