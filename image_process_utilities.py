@@ -21,3 +21,11 @@ def process_profile_pic(content: bytes) -> str:
         img.save(filepath, "JPEG", quality=85, optimize=True)
 
         return filename
+    
+def delete_profile_pic(filename: str | None) -> None:
+    if filename is None:
+        return None
+    
+    filepath = PROFILE_PICS_DIR / filename
+    if filepath.exists():
+        filepath.unlink()
