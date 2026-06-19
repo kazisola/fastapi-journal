@@ -13,4 +13,6 @@ class Settings(BaseSettings):
 
     profile_pic_max_bytes: int = 5 * 1024 * 1024
 
+    posts_per_page: int = 10
+
 settings = Settings() # type: ignore
