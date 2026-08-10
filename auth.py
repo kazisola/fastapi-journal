@@ -10,6 +10,9 @@ from fastapi.security import OAuth2PasswordBearer
 from config import settings
 import models
 
+import secrets
+import hashlib
+
 # Creates a password hasher
 password_hash = PasswordHash.recommended()
 
@@ -57,6 +60,15 @@ def verify_access_token(token: str) -> str | None:
         return None
     else:
         return payload.get("sub")
+
+
+# Create reset password token
+def generate_password_reset_token() -> str:
+    return secrets.token_urlsafe(32)
+
+# Hash generated token
+def hash_password_reset_token(token: str) -> str:
+    return hashlib.sha256(token.encode()).hexdigest()
 
 
 # Get current user as a dependy to protect routes
