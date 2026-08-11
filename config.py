@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     mail_port: int = 587
     mail_username: str = ""
     mail_password: SecretStr = SecretStr("")
-    mail_from: str = "noreply@example.com"
+    mail_from: str = "noreply@fastapiblog.com"
     mail_use_tls: bool = True
 
     frontend_url: str = "http://127.0.0.1:8000"
