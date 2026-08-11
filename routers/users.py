@@ -88,6 +88,57 @@ async def get_access_token(
     return Token(access_token=access_token, token_type="bearer")
 
 
+# Forgot password
+@router.post("/forgot-password", status_code=status.HTTP_202_ACCEPTED)
+async def forgot_password(
+    request_data: ForgotPasswordRequest,
+    background_tasks: BackgroundTasks,
+    db: Annotated[AsyncSession, Depends(get_db)]
+):
+    result = await db.execute(
+        select(models.User)
+        .where(
+            func.lower(models.User.email) == request_data.email.lower()
+        )
+    )
+    user = result.scalars().first()
+
+    # If user exists then delete whatever the existing reset tokens they have
+    if user:
+        await db.execute(
+            sql_delete(models.PasswordResetToken)
+            .where(
+                models.PasswordResetToken.user_id == user.id
+            )
+        )
+
+        token = generate_password_reset_token()
+        token_hash = hash_password_reset_token(token)
+
+        expires_at = datetime.now(UTC) + timedelta(minutes=settings.reset_token_expire_minutes)
+
+        reset_token = models.PasswordResetToken(
+            user_id=user.id,
+            token_hash=token_hash,
+            expires_at=expires_at
+        )
+
+        db.add(reset_token)
+        await db.commit()
+
+        background_tasks.add_task(
+            send_password_reset_email,
+            to_email=user.email,
+            username=user.username,
+            token=token
+        )
+
+        return {
+            "message": "If an account is found associated with this email, you will get an password reset link."
+        }
+
+
+
 # Get the logged in user
 @router.get("/me", response_model=UserPrivate)
 async def get_current_user(current_user: CurrentUser):
@@ -262,53 +313,3 @@ async def delete_user(
     await db.commit()
 
     delete_profile_pic(old_filename)
-
-
-# Forgot password
-@router.post("/forgot-password", status_code=status.HTTP_202_ACCEPTED)
-async def forgot_password(
-    request_data: ForgotPasswordRequest,
-    background_tasks: BackgroundTasks,
-    db: Annotated[AsyncSession, Depends(get_db)]
-):
-    result = await db.execute(
-        select(models.User)
-        .where(
-            func.lower(models.User.email) == request_data.email.lower()
-        )
-    )
-    user = result.scalars().first()
-
-    # If user exists then delete whatever the existing reset tokens they have
-    if user:
-        await db.execute(
-            sql_delete(models.PasswordResetToken)
-            .where(
-                models.PasswordResetToken.user_id == user.id
-            )
-        )
-
-        token = generate_password_reset_token()
-        token_hash = hash_password_reset_token(token)
-
-        expires_at = datetime.now(UTC) + timedelta(minutes=settings.reset_token_expire_minutes)
-
-        reset_token = models.PasswordResetToken(
-            user_id=user.id,
-            token_hash=token_hash,
-            expires_at=expires_at
-        )
-
-        db.add(reset_token)
-        await db.commit()
-
-        background_tasks.add_task(
-            send_password_reset_email,
-            to_email=user.email,
-            username=user.username,
-            token=token
-        )
-
-        return {
-            "message": "If an account is found associated with this email, you will get an password reset link."
-        }
