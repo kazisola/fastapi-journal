@@ -1,18 +1,21 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, status, BackgroundTasks
 from starlette.concurrency import run_in_threadpool
-from schema import UserCreate, UserUpdate, UserPublic, UserPrivate, Token
-from sqlalchemy import select, func
+from schema import UserCreate, UserUpdate, UserPublic, UserPrivate, Token, ForgotPasswordRequest
+from sqlalchemy import select, func, delete as sql_delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_db
 import models
-from datetime import timedelta
+from datetime import timedelta, datetime, UTC
+from email_utils import send_password_reset_email
 from config import settings
 from auth import (
     hash_password,
     verify_password,
     create_access_token,
     CurrentUser,
+    generate_password_reset_token,
+    hash_password_reset_token
 )
 from image_process_utilities import process_profile_pic, delete_profile_pic
 from PIL import UnidentifiedImageError
@@ -259,3 +262,53 @@ async def delete_user(
     await db.commit()
 
     delete_profile_pic(old_filename)
+
+
+# Forgot password
+@router.post("/forgot-password", status_code=status.HTTP_202_ACCEPTED)
+async def forgot_password(
+    request_data: ForgotPasswordRequest,
+    background_tasks: BackgroundTasks,
+    db: Annotated[AsyncSession, Depends(get_db)]
+):
+    result = await db.execute(
+        select(models.User)
+        .where(
+            func.lower(models.User.email) == request_data.email.lower()
+        )
+    )
+    user = result.scalars().first()
+
+    # If user exists then delete whatever the existing reset tokens they have
+    if user:
+        await db.execute(
+            sql_delete(models.PasswordResetToken)
+            .where(
+                models.PasswordResetToken.user_id == user.id
+            )
+        )
+
+        token = generate_password_reset_token()
+        token_hash = hash_password_reset_token(token)
+
+        expires_at = datetime.now(UTC) + timedelta(minutes=settings.reset_token_expire_minutes)
+
+        reset_token = models.PasswordResetToken(
+            user_id=user.id,
+            token_hash=token_hash,
+            expires_at=expires_at
+        )
+
+        db.add(reset_token)
+        await db.commit()
+
+        background_tasks.add_task(
+            send_password_reset_email,
+            to_email=user.email,
+            username=user.username,
+            token=token
+        )
+
+        return {
+            "message": "If an account is found associated with this email, you will get an password reset link."
+        }
