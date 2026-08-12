@@ -17,7 +17,7 @@ from auth import (
     generate_password_reset_token,
     hash_password_reset_token
 )
-from image_process_utilities import process_profile_pic, delete_profile_pic
+from image_process_utils import process_profile_pic, delete_profile_pic
 from PIL import UnidentifiedImageError
 from fastapi.security import OAuth2PasswordRequestForm
 
