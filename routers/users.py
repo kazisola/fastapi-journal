@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, status, BackgroundTasks
 from starlette.concurrency import run_in_threadpool
-from schema import UserCreate, UserUpdate, UserPublic, UserPrivate, Token, ForgotPasswordRequest, ResetPasswordRequest
+from schema import UserCreate, UserUpdate, UserPublic, UserPrivate, Token, ForgotPasswordRequest, ResetPasswordRequest, ChangePasswordRequest
 from sqlalchemy import select, func, delete as sql_delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_db
@@ -188,6 +188,32 @@ async def reset_password(
         "message": "Password reset successfully! Please login with your new password."
     }
 
+
+# Change password
+@router.post("/me/password", status_code=status.HTTP_200_OK)
+async def change_password(
+    password_data: ChangePasswordRequest,
+    current_user: CurrentUser,
+    db: Annotated[AsyncSession, Depends(get_db)]
+    ):
+    if not verify_password(password_data.current_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Incorrect password"
+        )
+
+    current_user.password_hash = hash_password(password_data.new_password)
+
+    await db.execute(
+        sql_delete(models.PasswordResetToken)
+        .where(models.PasswordResetToken.user_id == current_user.id)
+    )
+    await db.commit()
+
+    return {
+        "message": "Password has been changed successfully!"
+    }
+    
 
 
 # Get the logged in user
