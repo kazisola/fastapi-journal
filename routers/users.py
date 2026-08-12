@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, status, BackgroundTasks
 from starlette.concurrency import run_in_threadpool
-from schema import UserCreate, UserUpdate, UserPublic, UserPrivate, Token, ForgotPasswordRequest
+from schema import UserCreate, UserUpdate, UserPublic, UserPrivate, Token, ForgotPasswordRequest, ResetPasswordRequest
 from sqlalchemy import select, func, delete as sql_delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_db
@@ -136,6 +136,57 @@ async def forgot_password(
         return {
             "message": "If an account is found associated with this email, you will get an password reset link."
         }
+
+
+# Reset password
+@router.post("/reset-password", status_code=status.HTTP_200_OK)
+async def reset_password(
+        reset_data: ResetPasswordRequest,
+        db: Annotated[AsyncSession, Depends(get_db)]
+    ):
+    token_hash = hash_password_reset_token(reset_data.token);
+    result = await db.execute(
+        select(models.PasswordResetToken)
+        .where(models.PasswordResetToken.token_hash == token_hash)
+    )
+    reset_token = result.scalars().first()
+
+    if not reset_token:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token"
+        )
+
+    if reset_token.expires_at.replace(tzinfo=UTC) < datetime.now(UTC):
+        await db.delete(reset_token)
+        await db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token"
+        )
+
+    result = await db.execute(
+        select(models.User)
+        .where(models.User.id == reset_token.user_id)
+    )
+    user = result.scalars().first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token"
+        )
+
+    user.password_hash = hash_password(reset_data.new_password)
+
+    await db.execute(
+        sql_delete(models.PasswordResetToken)
+        .where(models.PasswordResetToken.user_id == user.id)
+    )
+    await db.commit()
+
+    return {
+        "message": "Password reset successfully! Please login with your new password."
+    }
 
 
 
