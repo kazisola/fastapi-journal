@@ -15,9 +15,9 @@ POPULATE_IMAGES_DIR = Path("populate_images")
 USERS = [
     {
         "username": "KaziSolayman",
-        "email": "kazisola@gmail.com",
+        "email": "KaziSolayman@gmail.com",
         "password": "TestPassword1!",
-        "image": "kazi-photo.jpg",
+        "image": "kazi.png",
     },
     {
         "username": "DefaultDude",
@@ -57,7 +57,7 @@ POSTS = [
         "content": "FastAPI has completely changed how I build APIs. The automatic documentation, type hints, and async support make development so much faster. Plus, the performance is incredible!",
     },
     {
-        "title": "I want to make the Best YouTube Tutorials!",
+        "title": "Kazi Has the Best YouTube Tutorials!",
         "content": "This was written by a viewer and definitely not by me... I mean him. Totally not written by him, but by me... a real viewer. Seriously, check out his channel for amazing Python content.",
     },
     {
@@ -65,7 +65,7 @@ POSTS = [
         "content": "I've been struggling with async programming for months, but FastAPI's approach finally made it click. Using 'async def' for endpoints and 'await' for database calls just makes sense.",
     },
     {
-        "title": "Schafer? I Barely Know Her!",
+        "title": "Lily? I Barely Know Her!",
         "content": "Is anyone actually reading these blog posts? Do they really need to say anything? I can keep going all day. At least AI can... Claude, keep going, please.",
     },
     {
@@ -243,6 +243,7 @@ async def clear_existing_data() -> None:
 
     # Clear database tables (order respects foreign keys)
     async with AsyncSessionLocal() as db:
+        await db.execute(delete(models.PasswordResetToken))
         await db.execute(delete(models.Post))
         await db.execute(delete(models.User))
         await db.commit()
