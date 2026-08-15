@@ -12,224 +12,497 @@ from main import app
 
 POPULATE_IMAGES_DIR = Path("populate_images")
 
+
 USERS = [
     {
-        "username": "KaziSolayman",
-        "email": "KaziSolayman@gmail.com",
-        "password": "TestPassword1!",
+        "username": "alexmorgan",
+        "email": "alex.morgan@example.com",
+        "password": "PortfolioDemo1!",
         "image": "kazi.png",
     },
     {
-        "username": "DefaultDude",
-        "email": "TestEmail2@test.com",
-        "password": "TestPassword2!",
+        "username": "jamielee",
+        "email": "jamie.lee@example.com",
+        "password": "PortfolioDemo2!",
         # No image - uses default
     },
     {
-        "username": "WillowTheCat",
-        "email": "TestEmail3@test.com",
-        "password": "TestPassword3!",
+        "username": "sarahchen",
+        "email": "sarah.chen@example.com",
+        "password": "PortfolioDemo3!",
         "image": "willow.png",
     },
     {
-        "username": "FarmDogs",
-        "email": "TestEmail4@test.com",
-        "password": "TestPassword4!",
+        "username": "michaelreed",
+        "email": "michael.reed@example.com",
+        "password": "PortfolioDemo4!",
         "image": "farmdogs.png",
     },
     {
-        "username": "PoppyTheCoder",
-        "email": "TestEmail5@test.com",
-        "password": "TestPassword5!",
+        "username": "nataliepark",
+        "email": "natalie.park@example.com",
+        "password": "PortfolioDemo5!",
         "image": "poppy.png",
     },
     {
-        "username": "GoodBoyBronx",
-        "email": "TestEmail6@test.com",
-        "password": "TestPassword6!",
+        "username": "danielbrooks",
+        "email": "daniel.brooks@example.com",
+        "password": "PortfolioDemo6!",
         "image": "bronx.png",
     },
 ]
 
+
 POSTS = [
     {
-        "title": "Why I Love FastAPI",
-        "content": "FastAPI has completely changed how I build APIs. The automatic documentation, type hints, and async support make development so much faster. Plus, the performance is incredible!",
+        "title": "The Project That Finally Made Backend Development Click",
+        "content": (
+            "For a long time, backend development felt like a collection of unrelated "
+            "concepts: databases, authentication, APIs, validation, deployment. That "
+            "changed when I built a project from scratch instead of following a tutorial. "
+            "Having to make every architectural decision myself forced me to understand "
+            "how the pieces actually fit together. I still have plenty to learn, but "
+            "building something end to end made the difference."
+        ),
     },
     {
-        "title": "Kazi Has the Best YouTube Tutorials!",
-        "content": "This was written by a viewer and definitely not by me... I mean him. Totally not written by him, but by me... a real viewer. Seriously, check out his channel for amazing Python content.",
+        "title": "What I Learned From Rebuilding My Portfolio",
+        "content": (
+            "I originally thought rebuilding my portfolio would mostly be a frontend "
+            "exercise. It turned into a lesson in everything else. I had to think about "
+            "authentication, database structure, image uploads, error handling, responsive "
+            "design, and deployment. The biggest lesson was that a portfolio isn't just "
+            "about showing finished projects. It should show how you think."
+        ),
     },
     {
-        "title": "Async/Await Finally Clicked",
-        "content": "I've been struggling with async programming for months, but FastAPI's approach finally made it click. Using 'async def' for endpoints and 'await' for database calls just makes sense.",
+        "title": "A Small Refactor That Made a Huge Difference",
+        "content": (
+            "I spent an afternoon cleaning up a service that had slowly grown into one "
+            "large file. Nothing was technically broken, but every change felt risky. "
+            "I separated the database operations, authentication logic, and request "
+            "handling into smaller pieces. The application didn't look dramatically "
+            "different afterward, but working on it became much easier. Sometimes the "
+            "best refactors are the ones that make future work boring."
+        ),
     },
     {
-        "title": "Lily? I Barely Know Her!",
-        "content": "Is anyone actually reading these blog posts? Do they really need to say anything? I can keep going all day. At least AI can... Claude, keep going, please.",
+        "title": "Why I Started Writing About the Things I Build",
+        "content": (
+            "I've always been better at understanding something after explaining it to "
+            "someone else. Writing short posts about projects has become an extension "
+            "of that habit. It forces me to slow down, figure out what I actually "
+            "understand, and document the decisions I made. It also gives me something "
+            "more useful than a list of technologies when I'm looking back at old work."
+        ),
     },
     {
-        "title": "Pydantic Validation is Magic",
-        "content": "The way Pydantic handles validation in FastAPI is incredible. Define your model with type hints, and boom - automatic validation, serialization, and documentation. No more writing validation code by hand!",
+        "title": "Getting Comfortable With SQL Took Longer Than Expected",
+        "content": (
+            "I initially tried to hide behind an ORM and avoid learning much SQL. That "
+            "worked until I started debugging queries that weren't doing what I expected. "
+            "Learning joins, indexes, transactions, and query plans completely changed "
+            "how I think about database code. I still appreciate the convenience of an "
+            "ORM, but understanding the SQL underneath it makes the abstraction much more "
+            "useful."
+        ),
     },
     {
-        "title": "From Flask to FastAPI",
-        "content": "I made the switch from Flask to FastAPI last month. The learning curve was minimal, and the benefits are huge. Automatic OpenAPI docs, better performance, and native async support. No regrets!",
+        "title": "The Difference Between a Demo and a Real Application",
+        "content": (
+            "A demo can get away with hardcoded data, minimal error handling, and a single "
+            "happy path. A real application can't. Once I started treating my personal "
+            "projects like software someone else might actually use, I began paying much "
+            "more attention to authentication, validation, loading states, failures, "
+            "logging, and deployment. Those details aren't as exciting as adding features, "
+            "but they're what make a project feel finished."
+        ),
     },
     {
-        "title": "Some of My Favorite Horror Movies",
-        "content": "I love horror movies and practical effects. One of my favorites is 'The Thing'. Hereditary is a great modern one, but most people have seen it. One modern one I really liked that not as many people have seen is 'The Night House'. It's a slow burn but really effective. More psychological than jump-scare based.",
+        "title": "My Favorite Way to Learn a New Framework",
+        "content": (
+            "I usually spend the first hour reading documentation and the next few hours "
+            "trying to build something ridiculously small. A notes API, a URL shortener, "
+            "or a simple authentication service is enough. Once I hit a problem that "
+            "actually matters to the project, the documentation becomes much easier to "
+            "understand. I learn more from one small broken project than I do from hours "
+            "of passively watching tutorials."
+        ),
     },
     {
-        "title": "Type Hints Changed My Life",
-        "content": "I used to think type hints were just extra typing (pun intended). But after using FastAPI, I see how they enable incredible tooling - better autocomplete, automatic validation, and self-documenting code.",
+        "title": "When Overengineering Finally Bit Me",
+        "content": (
+            "I once spent more time designing an architecture than I spent building the "
+            "feature. There were abstractions for things that only had one implementation, "
+            "interfaces that didn't solve a real problem, and layers that mostly forwarded "
+            "arguments. It looked sophisticated and made simple changes harder. These days "
+            "I try to earn complexity instead of adding it because I think I might need it "
+            "later."
+        ),
     },
     {
-        "title": "The Power of Dependency Injection",
-        "content": "FastAPI's dependency injection system is so elegant. Need a database session? Just add it as a parameter. Need the current user? Same thing. It makes the code so clean and testable.",
+        "title": "A Better Approach to Environment Variables",
+        "content": (
+            "Environment variables started as something I used because every tutorial told "
+            "me to. Eventually I understood why they matter. Database credentials, secret "
+            "keys, API tokens, and environment-specific configuration shouldn't be baked "
+            "into the application. Keeping configuration outside the code also makes it "
+            "much easier to move the same application between local development, staging, "
+            "and production."
+        ),
     },
     {
-        "title": "SQLAlchemy 2.0 Is Worth the Upgrade",
-        "content": "If you're still using SQLAlchemy 1.x patterns, it's time to upgrade. The new 2.0 style with select() and mapped_column() is much more explicit and works beautifully with async.",
+        "title": "The First Time I Had to Debug a Production Issue",
+        "content": (
+            "Nothing makes logging suddenly seem important like trying to figure out why "
+            "something broke when you can't reproduce it locally. My first instinct was "
+            "to add print statements everywhere. Eventually I learned to think about what "
+            "information would actually help me reconstruct what happened. Good logs aren't "
+            "about logging everything. They're about leaving useful clues for your future self."
+        ),
     },
     {
-        "title": "Hot Take: Python > JavaScript for APIs",
-        "content": "Yes, I said it. For backend APIs, Python with FastAPI beats Node.js. Fight me in the comments. (Just kidding, this blog doesn't have comments... yet.)",
+        "title": "Why I Prefer Boring APIs",
+        "content": (
+            "The best APIs I've worked with aren't clever. Their endpoints are predictable, "
+            "their responses are consistent, and their errors make sense. There is something "
+            "really satisfying about looking at an unfamiliar API and immediately knowing "
+            "how to use it. Fancy architecture can be useful, but predictability is usually "
+            "more valuable to the person consuming your software."
+        ),
     },
     {
-        "title": "Understanding HTTP Status Codes",
-        "content": "200 OK, 201 Created, 400 Bad Request, 404 Not Found, 500 Internal Server Error. Learn these codes - they're how your API communicates with the world. FastAPI makes it easy to return the right ones.",
+        "title": "A Weekend Project That Got Out of Hand",
+        "content": (
+            "The plan was simple: spend Saturday building a tiny application to practice "
+            "authentication. By Sunday evening I had added image uploads, pagination, "
+            "password resets, database migrations, and a completely unnecessary dark mode. "
+            "It wasn't exactly what I planned to build, but those accidental features taught "
+            "me more than the original project idea. Apparently I have no concept of scope."
+        ),
     },
     {
-        "title": "Some of My Favorite Video Games",
-        "content": "The one I probably play the most, but not my favorite, is League of Legends... It's a love/hate relationship. If you play, you get it. My favorites are all single-player RPGs. The Elder Scrolls series (Especially Morrowind and Skyrim) were awesome. The Baldur's Gate series took up a lot of my time as a kid, and more recently, the 3rd one was great. Speaking of Baldur's Gate, I love that old isometric style of RPG, so I looked for more modern equivalents and found Pillars of Eternity, which was fantastic. Also both Pathfinder: Kingmaker and Wrath of the Righteous were a lot of fun as well.",
+        "title": "What Makes a Good Developer Experience?",
+        "content": (
+            "Small conveniences add up. Fast tests, useful error messages, predictable "
+            "project structure, automatic formatting, good documentation, and a simple "
+            "local setup can make a codebase dramatically nicer to work in. Developer "
+            "experience isn't something you notice when it's good. You notice it when "
+            "everything takes five unnecessary steps."
+        ),
     },
     {
-        "title": "JWT Authentication Demystified",
-        "content": "JSON Web Tokens seemed scary at first, but they're actually pretty simple. Encode some user data, sign it with a secret, and use it to verify requests. FastAPI + PyJWT makes it straightforward.",
+        "title": "Learning to Read Documentation Properly",
+        "content": (
+            "I used to search for tutorials every time I got stuck. Eventually I realized "
+            "I was often looking for information that was already in the official docs. "
+            "The trick was learning how to read them. Examples tell you how something works, "
+            "but the reference documentation tells you what the software actually promises "
+            "to do. That distinction has saved me a lot of time."
+        ),
     },
     {
-        "title": "Tips for API Design",
-        "content": "Use nouns for resources (/users, /posts), HTTP verbs for actions (GET, POST, PUT, DELETE), and return consistent responses. FastAPI's response_model helps enforce this consistency.",
+        "title": "The Little Things That Make a Login Page Feel Finished",
+        "content": (
+            "A login form is easy to build. A good login experience takes more thought. "
+            "What happens when the password is wrong? What if the request takes a few seconds? "
+            "Can the user see that their action worked? What happens after a session expires? "
+            "I've started paying much more attention to these small interactions because they "
+            "are often what separates a working feature from a polished one."
+        ),
     },
     {
-        "title": "Path Parameters vs Query Parameters",
-        "content": "Use path parameters for required resource identifiers (/users/123) and query parameters for optional filters (/posts?author=kazi&limit=10). FastAPI handles both beautifully with automatic validation.",
+        "title": "Why Pagination Is More Important Than It Looks",
+        "content": (
+            "Pagination seemed like one of those features I could add later. Then I built "
+            "a page that loaded every record from the database and immediately understood "
+            "why it matters. A handful of records is fine. Thousands are a completely "
+            "different story. Pagination isn't just a UI feature; it's part of designing "
+            "an application that can grow without quietly becoming expensive."
+        ),
     },
     {
-        "title": "Error Handling Done Right",
-        "content": "Don't just return 500 for everything! Use HTTPException to return meaningful status codes and messages. Your API consumers will thank you when debugging issues.",
+        "title": "What I Look For in a Good Database Schema",
+        "content": (
+            "When designing a schema, I try to imagine what the application will need to "
+            "ask the database rather than just thinking about what data exists. Relationships, "
+            "constraints, indexes, and uniqueness rules all become much clearer when you "
+            "start from actual queries. A schema isn't just a place to store information. "
+            "It's part of the application's architecture."
+        ),
     },
     {
-        "title": "Why I Switched to UV",
-        "content": "UV is blazingly fast for Python package management. Install packages in milliseconds instead of minutes. If you haven't tried it yet, you're missing out!",
+        "title": "The Most Useful Git Habit I Picked Up",
+        "content": (
+            "I used to make enormous commits with messages like 'finished project' or "
+            "'fix stuff.' Now I try to keep commits focused on one logical change. It makes "
+            "reviewing history much easier and gives me a way to understand why something "
+            "changed months later. It sounds minor, but good commit history has saved me "
+            "more than once."
+        ),
     },
     {
-        "title": "What About Favorite Books?",
-        "content": "I don't read a lot of fiction. The last fiction book I read was 'The Martian' by Andy Weir, which I really enjoyed. But most of my reading is non-fiction. Some of my favorites are 'Meditations' by Marcus Aurelius, 'Conscious' by Annaka Harris, 'How to Die' by Seneca, and 'The Last Lecture' by Randy Pausch. The latest fiction book I'm reading through (and have been for a while) is 'House of Leaves' by Mark Z. Danielewski. It's... different, but awesome.",
+        "title": "Building Features Around Real User Actions",
+        "content": (
+            "One mistake I made early on was designing features around database models "
+            "instead of user actions. Users don't think in terms of CRUD operations. They "
+            "think 'I want to save this,' 'I want to update my profile,' or 'I forgot my "
+            "password.' Starting from those actions leads to much better decisions about "
+            "validation, permissions, and the overall interface."
+        ),
     },
     {
-        "title": "Testing FastAPI Applications",
-        "content": "FastAPI's TestClient makes testing a breeze. Write tests for your endpoints, mock dependencies, and catch bugs before they hit production. Your future self will thank you.",
+        "title": "Why Error Messages Are Part of the UI",
+        "content": (
+            "An error response might technically belong to the backend, but the person "
+            "experiencing it doesn't care which layer produced it. A vague 'Something went "
+            "wrong' message leaves users stuck. A useful error tells them what happened "
+            "and, when possible, what they can do next. I've started treating error messages "
+            "as part of the user experience rather than an afterthought."
+        ),
     },
     {
-        "title": "Environment Variables and Security",
-        "content": "Never hardcode secrets! Use environment variables and pydantic-settings to keep your API keys, database URLs, and JWT secrets safe. It's Security 101.",
+        "title": "The Joy of Finally Understanding Async Code",
+        "content": (
+            "Async programming was one of those topics that made sense in theory and felt "
+            "strange in practice. The turning point was realizing that async isn't about "
+            "making everything faster. It's about allowing a program to do useful work "
+            "while waiting on things like network or database operations. Once that clicked, "
+            "the syntax stopped feeling magical and started feeling practical."
+        ),
     },
     {
-        "title": "CORS: The Bane of Frontend Devs",
-        "content": "Getting CORS errors? FastAPI's CORSMiddleware is your friend. Just remember: be specific about allowed origins in production. Don't use '*' unless you really mean it.",
+        "title": "What I Learned From Building Image Uploads",
+        "content": (
+            "Image uploads look simple from the outside. Behind the scenes there are file "
+            "types, file sizes, storage locations, naming collisions, validation, cleanup, "
+            "and security concerns to think about. Building the feature forced me to consider "
+            "all of those edge cases. It's a good reminder that seemingly small features "
+            "often have much more depth than their UI suggests."
+        ),
     },
     {
-        "title": "Async Database Queries",
-        "content": "Blocking database calls in async code? That's a performance killer. Use async drivers like psycopg (for PostgreSQL) or aiosqlite to keep your event loop happy.",
+        "title": "My Approach to Authentication",
+        "content": (
+            "Authentication is one area where I don't want to reinvent anything unnecessarily. "
+            "I prefer using established libraries and patterns, keeping password handling "
+            "simple, storing secrets outside the repository, and making authorization rules "
+            "explicit. Security isn't a place where clever code earns extra points. Boring "
+            "and well-understood is usually exactly what I want."
+        ),
     },
     {
-        "title": "The Beauty of Response Models",
-        "content": "Response models aren't just for documentation - they filter out sensitive fields automatically. Define what goes out, and Pydantic handles the rest.",
+        "title": "The Best Debugging Tool Is Still Asking Why",
+        "content": (
+            "When something breaks, it's tempting to immediately change the line that looks "
+            "wrong. I've gotten better results by asking why the behavior happened in the "
+            "first place. Why is this value empty? Why did this query return nothing? Why "
+            "did this request get here? Following the chain back to the original assumption "
+            "usually produces a better fix than patching the symptom."
+        ),
     },
     {
-        "title": "Let's Talk Board Games",
-        "content": "I love Settlers of Catan. It's a classic for a reason. I'm actually going to make a sword in my woodshop soon that will be my friend group's trophy for the annual Catan champion that we're going to call 'The Katana of Catan'. One thing I've always wanted to do, but never have, is play an in-person Dungeons & Dragons campaign. I've played so many D&D inspired video games, but never the real deal. Hopefully someday...",
+        "title": "A Few Things I Wish I Knew Before My First API",
+        "content": (
+            "I wish I'd understood earlier that API design is mostly about consistency. "
+            "Consistent naming, status codes, validation, authentication, and response "
+            "formats make everything easier. I also wish I'd started thinking about error "
+            "cases earlier. The happy path is usually easy. The interesting engineering "
+            "starts when things go wrong."
+        ),
     },
     {
-        "title": "API Versioning Strategies",
-        "content": "APIs evolve. Version them from day one! Whether you use URL prefixes (/v1/users) or headers, plan for change. Breaking changes without versioning breaks trust.",
+        "title": "Why I Still Like Building Things From Scratch",
+        "content": (
+            "There are plenty of tools that can generate a project in minutes, and they are "
+            "great. But sometimes I deliberately build something without a starter template. "
+            "Starting with an empty directory forces me to make decisions that a template "
+            "normally makes for me. It is slower, but it has taught me a lot about what "
+            "actually belongs in a project."
+        ),
     },
     {
-        "title": "Background Tasks in FastAPI",
-        "content": "Don't make users wait for emails to send or files to process. FastAPI's BackgroundTasks lets you return immediately while work continues in the background.",
+        "title": "How I Keep Personal Projects From Becoming Abandoned",
+        "content": (
+            "The easiest way for me to abandon a project is to make the first version too "
+            "ambitious. Now I try to define one small version that I could realistically "
+            "finish in a weekend. Once that works, adding features becomes fun instead of "
+            "overwhelming. A small finished project teaches me more than a massive project "
+            "that stays at 60 percent forever."
+        ),
     },
     {
-        "title": "Rate Limiting Your API",
-        "content": "Protect your API from abuse with rate limiting. Too many requests? Return 429 Too Many Requests. Your server (and your wallet) will thank you.",
+        "title": "The Difference Between Knowing a Tool and Understanding It",
+        "content": (
+            "I can use a library without really understanding it. That's useful, but there's "
+            "a point where understanding the underlying idea makes everything easier. "
+            "Learning what a database transaction actually does, for example, makes ORM "
+            "behavior much less mysterious. I'm trying to spend more time learning the "
+            "concepts behind my tools instead of memorizing their APIs."
+        ),
     },
     {
-        "title": "Documentation That Writes Itself",
-        "content": "Add docstrings to your endpoints and they appear in Swagger UI. Add examples to your Pydantic models and they show up too. Documentation has never been this easy.",
+        "title": "A Simple Rule for Choosing Dependencies",
+        "content": (
+            "Every dependency adds convenience, but it also adds something I have to maintain. "
+            "Before adding a package, I try to ask whether it solves a real problem and whether "
+            "the problem is large enough to justify another dependency. Sometimes the answer "
+            "is absolutely yes. Other times, a few straightforward lines of code are easier "
+            "to understand and maintain."
+        ),
     },
     {
-        "title": "WebSockets with FastAPI",
-        "content": "REST isn't the only game in town. FastAPI supports WebSockets for real-time communication. Chat apps, live updates, notifications - all possible!",
+        "title": "What I Like About Python",
+        "content": (
+            "The biggest reason I keep coming back to Python isn't one particular feature. "
+            "It's how quickly I can go from an idea to something working. The ecosystem is "
+            "huge, the syntax stays out of the way, and there are mature tools for almost "
+            "everything I tend to build. It makes experimentation feel cheap, which is "
+            "exactly what I want when I'm learning."
+        ),
     },
     {
-        "title": "Favorite Hobbies, You Ask?",
-        "content": "Woodworking, hands down. I love making things with wood, but I wish I had more time for it. There's something special about making something with your own hands, with materials that are local. A lot of the stuff I've built came from trees that fell on my family's property. My stuff might not always be as good as something you buy in a store, but there's a story and a connection there that makes it better than anything I could buy elsewhere.",
+        "title": "Trying to Make My Code Easier to Delete",
+        "content": (
+            "One of the stranger lessons I've learned is that good code isn't necessarily "
+            "code that will exist forever. Requirements change. Libraries get replaced. "
+            "Features get removed. I try to keep boundaries clear enough that deleting or "
+            "replacing a piece of the application doesn't require rewriting everything "
+            "around it. Sometimes maintainability is really just making change less painful."
+        ),
     },
     {
-        "title": "Custom Validators in Pydantic",
-        "content": "Need validation beyond type checking? Pydantic's field_validator and model_validator decorators let you add custom logic. Validate emails, check password strength, whatever you need.",
+        "title": "What I Learned From a Failed Deployment",
+        "content": (
+            "The application worked perfectly on my machine, right up until I deployed it. "
+            "A missing environment variable and an incorrect database configuration later, "
+            "I had a much better appreciation for deployment parity. Since then, I try to "
+            "make the deployment process as repeatable as possible and document the things "
+            "the application actually needs to run."
+        ),
     },
     {
-        "title": "The ORM vs Raw SQL Debate",
-        "content": "ORMs like SQLAlchemy add abstraction but can hide performance issues. Know when to use the ORM and when to drop to raw SQL. Both have their place.",
+        "title": "Why I Started Paying Attention to Accessibility",
+        "content": (
+            "Accessibility used to feel like something I would get to after the main features "
+            "were finished. Now I try to consider it while building. Keyboard navigation, "
+            "labels, readable contrast, meaningful buttons, and sensible focus behavior "
+            "aren't just accessibility improvements. They usually make the interface better "
+            "for everyone."
+        ),
     },
     {
-        "title": "Debugging Async Code",
-        "content": "Async bugs can be tricky. Use logging liberally, understand the event loop, and don't mix sync and async without care. asyncio.run() is your entry point.",
+        "title": "The Most Useful Feature Nobody Notices",
+        "content": (
+            "Loading states are easy to overlook because, when they work, users barely notice "
+            "them. But a button that gives no indication after being clicked makes an application "
+            "feel broken. The same goes for empty states and useful feedback after an action. "
+            "These aren't flashy features, but they make software feel responsive and intentional."
+        ),
     },
     {
-        "title": "Containerizing FastAPI Apps",
-        "content": "Docker + FastAPI = deployment bliss. Create a Dockerfile, build your image, and deploy anywhere. Consistency across environments is priceless.",
+        "title": "How I Decide What to Build Next",
+        "content": (
+            "When a project starts getting bigger, I keep a list of possible improvements and "
+            "sort them into three categories: things users actually need, things that will teach "
+            "me something, and things that just sound fun. The best tasks usually overlap two "
+            "of those categories. It keeps me from spending a week polishing something nobody "
+            "will ever use."
+        ),
     },
     {
-        "title": "Health Check Endpoints",
-        "content": "Add a /health endpoint to your API. Load balancers and orchestrators need to know if your service is alive. Return 200 if healthy, details if not. I didn't do this in this tutorial, but there's only so much time in a video!",
+        "title": "A Better Way to Think About Testing",
+        "content": (
+            "I used to think testing meant trying to prove that the application worked. Now I "
+            "think of it more as defining what I expect the application to do. That shift makes "
+            "tests much easier to write. Instead of testing every implementation detail, I focus "
+            "on the behavior that matters: valid requests work, invalid requests fail correctly, "
+            "and important business rules stay intact."
+        ),
     },
     {
-        "title": "Hmm... What Else?",
-        "content": "I'm running out of ideas for these blog posts. Maybe I should just write about how great FastAPI is... Oh wait, I've already done that multiple times. Well, if you're still reading, thanks for sticking with it! You're awesome.",
+        "title": "Why Good Naming Is Worth the Extra Minute",
+        "content": (
+            "I've opened old code and spent more time figuring out what a variable meant than "
+            "I would have spent writing the feature again. Naming isn't glamorous, but good "
+            "names remove entire paragraphs of explanation. If a function needs a long comment "
+            "to explain what its name should have said, I usually take that as a sign that "
+            "the name needs another pass."
+        ),
     },
     {
-        "title": "Pagination: Don't Return Everything",
-        "content": "Returning 10,000 records in one response? Please don't. Implement pagination with limit and offset (or better, cursor-based). Your database and clients will be happier.",
+        "title": "The Problem With Always Chasing New Technology",
+        "content": (
+            "There is always a new framework, database, runtime, or tool promising to change "
+            "everything. I enjoy trying new technology, but I've realized that constantly "
+            "switching stacks can become a form of procrastination. Sometimes the most useful "
+            "thing I can do is take the tools I already know and build something substantial "
+            "with them."
+        ),
     },
     {
-        "title": "OpenAPI Schema Customization",
-        "content": "FastAPI's auto-generated OpenAPI schema is great, but sometimes you need to customize. Add examples, descriptions, and tags to make your docs shine.",
+        "title": "What Makes a Project Portfolio-Worthy?",
+        "content": (
+            "A project doesn't need to be revolutionary to be worth showing. I think a strong "
+            "portfolio project demonstrates that you can take a problem, make reasonable "
+            "technical decisions, build the thing, handle edge cases, and explain what you "
+            "learned. A simple application with thoughtful engineering is much more interesting "
+            "to me than a huge project where the technology is doing all the talking."
+        ),
     },
     {
-        "title": "Security Headers Matter",
-        "content": "Add security headers to your responses: X-Content-Type-Options, X-Frame-Options, Content-Security-Policy. Small effort, big security improvement.",
+        "title": "Taking a Break Actually Helped Me Solve the Problem",
+        "content": (
+            "I spent almost two hours staring at a bug that turned out to be caused by one "
+            "incorrect assumption. I stepped away, made dinner, came back, and spotted it "
+            "within five minutes. Sometimes the best debugging strategy isn't another tool "
+            "or another search. It's giving your brain enough distance to see the problem "
+            "without staring directly at it."
+        ),
     },
     {
-        "title": "Caching Strategies",
-        "content": "Not every request needs to hit the database. Use caching with Redis or even in-memory for frequently accessed data. Your response times will plummet (in a good way).",
+        "title": "Things I Want to Get Better At This Year",
+        "content": (
+            "I'm trying to focus less on collecting technologies and more on improving the "
+            "fundamentals. Better database design, cleaner architecture, stronger testing, "
+            "more thoughtful UI decisions, and a deeper understanding of deployment are all "
+            "high on the list. I'd rather become significantly better at a handful of useful "
+            "skills than have ten frameworks listed on my resume that I barely remember using."
+        ),
     },
     {
-        "title": "GraphQL vs REST",
-        "content": "GraphQL is trendy, but REST is battle-tested. Choose based on your needs, not hype. FastAPI excels at REST, but Strawberry brings GraphQL if you need it.",
+        "title": "Building Software Is Mostly Making Decisions",
+        "content": (
+            "The more I build, the less I think programming is about typing code. Most of the "
+            "interesting work happens before the code exists: deciding what belongs in the "
+            "database, where validation should happen, how permissions work, what happens when "
+            "a request fails, and which parts should stay independent. Writing the code is "
+            "important, but making good decisions is where most of the engineering happens."
+        ),
     },
     {
-        "title": "Movie Quotes!",
-        "content": "'You wanna know how I did it? This is how I did it, Anton. I never saved anything for the swim back.' - 'Gattaca'. One of my favorite movies of all time. As silly as it sounds, that movie is actually one of the main reasons I decided to pursue an internship at NASA back in college. After that internship, I found I had a craving to learn and do more. It pushed me to take programming more seriously, which eventually led me to where I am today... Which is writing a blog post about FastAPI that's just meant to fill space. TLDR: I watched Gattaca and now I'm writing sample blog posts at 3am on a Saturday for this FastAPI tutorial. And you can too!",
+        "title": "The Projects I Remember Most Aren't the Biggest Ones",
+        "content": (
+            "Some of my favorite projects started as tiny experiments. A weekend app, a script "
+            "to automate something annoying, or a small API built just to understand a concept. "
+            "They weren't impressive on paper, but each one solved a real problem or taught me "
+            "something I didn't know before. That's probably why I enjoy personal projects so "
+            "much: there is always another reason to build something."
+        ),
     },
 ]
 
-# The 44th post - always the oldest (easter egg for pagination tutorial)
+
+# The 44th post - always the oldest.
 POST_44 = {
-    "title": "Fun Fact: My High School Football Number Was #44",
-    "content": "If you've paginated all the way to this post, the 44th one... you get to learn this fun fact: that my high school football number was #44. Other notable absolute legends who wore number #44 include: Jerry West (NBA - Also fellow WV Native), Hank Aaron (MLB), and Floyd Little (NFL).",
+    "title": "A Note From the Beginning",
+    "content": (
+        "If you made it all the way to the oldest post on the site, thanks for looking around. "
+        "This project started as a simple idea to learn more about building a full-stack "
+        "application, but it slowly became a place to document the things I was learning along "
+        "the way. There are better ways to build almost everything here, and that's kind of "
+        "the point. Projects are snapshots of where you are in your learning journey."
+    ),
 }
 
 
@@ -247,6 +520,7 @@ async def clear_existing_data() -> None:
         await db.execute(delete(models.Post))
         await db.execute(delete(models.User))
         await db.commit()
+
     print("Cleared existing data")
 
 
@@ -260,18 +534,23 @@ async def update_post_dates() -> None:
         if not posts:
             return
 
-        # First post (POST_44) is the oldest - ~90 days ago
+        # First post (POST_44) is the oldest.
         await db.execute(
             update(models.Post)
             .where(models.Post.id == posts[0].id)
             .values(date_posted=now - timedelta(days=90)),
         )
 
-        # Remaining posts: each ~1.5 days newer than previous
+        # Remaining posts become progressively newer.
         for i, post in enumerate(posts[1:], start=1):
             days_ago = (len(posts) - i) * 1.5
             hours_offset = (i * 7) % 24
-            post_date = now - timedelta(days=days_ago, hours=hours_offset)
+
+            post_date = now - timedelta(
+                days=ago if False else days_ago,
+                hours=hours_offset,
+            )
+
             await db.execute(
                 update(models.Post)
                 .where(models.Post.id == post.id)
@@ -279,6 +558,7 @@ async def update_post_dates() -> None:
             )
 
         await db.commit()
+
     print("Updated post dates")
 
 
@@ -289,12 +569,12 @@ async def populate() -> None:
         transport=transport,
         base_url="http://localhost",
     ) as client:
-        # Clear existing data (local images first, then database)
         await clear_existing_data()
 
         users: list[dict] = []
 
         print(f"\nCreating {len(USERS)} users...")
+
         for user_data in USERS:
             response = await client.post(
                 "/api/users",
@@ -305,6 +585,7 @@ async def populate() -> None:
                 },
             )
             response.raise_for_status()
+
             user = response.json()
             print(f"  Created: {user['username']}")
 
@@ -316,10 +597,12 @@ async def populate() -> None:
                 },
             )
             response.raise_for_status()
+
             token = response.json()["access_token"]
 
             if image_name := user_data.get("image"):
                 image_path = POPULATE_IMAGES_DIR / image_name
+
                 if image_path.exists():
                     response = await client.patch(
                         f"/api/users/{user['id']}/picture",
@@ -330,44 +613,60 @@ async def populate() -> None:
                                 "image/png",
                             ),
                         },
-                        headers={"Authorization": f"Bearer {token}"},
+                        headers={
+                            "Authorization": f"Bearer {token}",
+                        },
                     )
                     response.raise_for_status()
                     print(f"    Uploaded: {image_name}")
 
             users.append(
-                {"id": user["id"], "username": user["username"], "token": token},
+                {
+                    "id": user["id"],
+                    "username": user["username"],
+                    "token": token,
+                },
             )
 
         print(f"\nCreating {len(POSTS) + 1} posts...")
 
-        # First create POST_44 (will become oldest after date update)
+        # Create the oldest post first.
         response = await client.post(
             "/api/posts",
-            json={"title": POST_44["title"], "content": POST_44["content"]},
-            headers={"Authorization": f"Bearer {users[0]['token']}"},
+            json={
+                "title": POST_44["title"],
+                "content": POST_44["content"],
+            },
+            headers={
+                "Authorization": f"Bearer {users[0]['token']}",
+            },
         )
         response.raise_for_status()
+
         print(f"  Created: '{POST_44['title']}'")
 
-        # Create remaining posts in reverse (last in list = oldest, first = newest)
+        # Create remaining posts in reverse so the newest posts are created last.
         for i, post_data in enumerate(reversed(POSTS)):
             user = users[i % len(users)]
+
             response = await client.post(
                 "/api/posts",
                 json={
                     "title": post_data["title"],
                     "content": post_data["content"],
                 },
-                headers={"Authorization": f"Bearer {user['token']}"},
+                headers={
+                    "Authorization": f"Bearer {user['token']}",
+                },
             )
             response.raise_for_status()
+
             title = post_data["title"]
-            print(
-                f"  Created: '{title[:50]}...'"
-                if len(title) > 50
-                else f"  Created: '{title}'",
-            )
+
+            if len(title) > 50:
+                print(f"  Created: '{title[:50]}...'")
+            else:
+                print(f"  Created: '{title}'")
 
         print("\nUpdating post dates...")
         await update_post_dates()
@@ -381,4 +680,10 @@ async def populate() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(populate())
+    if __import__("sys").platform == "win32":
+        asyncio.run(
+            populate(),
+            loop_factory=lambda: asyncio.SelectorEventLoop(),
+        )
+    else:
+        asyncio.run(populate())

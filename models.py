@@ -36,6 +36,8 @@ class Post(Base):
     )
     author: Mapped[User] = relationship(back_populates="posts")
 
+    likes: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+
 class PasswordResetToken(Base):
     __tablename__ = "password_reset_tokens"
 

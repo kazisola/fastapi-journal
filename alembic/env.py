@@ -1,4 +1,5 @@
 import asyncio
+import selectors
 from logging.config import fileConfig
 
 from sqlalchemy import pool
@@ -15,6 +16,11 @@ from config import settings
 # access to the values within the .ini file in use.
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.database_url)
+
+# Windows Proactor even loop issue
+asyncio.set_event_loop_policy(
+    asyncio.WindowsSelectorEventLoopPolicy()
+)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
